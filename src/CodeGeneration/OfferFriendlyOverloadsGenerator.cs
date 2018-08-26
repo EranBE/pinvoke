@@ -63,6 +63,8 @@ namespace PInvoke
         /// <inheritdoc />
         public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
+            Debugger.Launch();
+            try {
             var applyTo = context.ProcessingMember;
             var compilation = context.Compilation;
             var semanticModel = compilation.GetSemanticModel(applyTo.SyntaxTree);
@@ -140,6 +142,14 @@ namespace PInvoke
             }
 
             return Task.FromResult(SyntaxFactory.SingletonList<MemberDeclarationSyntax>(generatedType));
+            } catch (Exception ex) when (Check(ex)) {
+                throw;
+            }
+        }
+
+        private static bool Check(Exception ex) {
+            System.Diagnostics.Debugger.Launch();
+            return false;
         }
 
         private static SyntaxList<AttributeListSyntax> FilterAttributes(SyntaxList<AttributeListSyntax> attributeLists)
